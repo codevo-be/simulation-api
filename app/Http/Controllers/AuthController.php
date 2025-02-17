@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use Carbon\Carbon;
+use GuzzleHttp\Psr7\ServerRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Laravel\Passport\Exceptions\OAuthServerException;
+use Laravel\Passport\Http\Controllers\AccessTokenController;
+use Laravel\Passport\Passport;
+
+class AuthController extends Controller
+{
+    public function login(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $clientId = config('services.passport.password_grant_client.id');
+        $clientSecret = config('services.passport.password_grant_client.secret');
+
+        if(!$clientId || !$clientSecret){
+            return response()->json([
+                'message' => "Erreur de configuration serveur. Veuillez contacter l'administrateur."
+            ], 500);
+        }
+
+        $data = [
+            'grant_type' => 'password',
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'username' => $request->email,
+            'password' => $request->password,
+            'scope' => ''
+        ];
+
+        try {
+            $serverRequest = new ServerRequest('POST', '/oauth/token', [], null, '1.1', []);
+            $serverRequest = $serverRequest->withParsedBody($data);
+
+            $tokenResponse = app(AccessTokenController::class)->issueToken($serverRequest);
+            $content = json_decode($tokenResponse->getContent(), true);
+
+            if (isset($content['error'])) {
+                return response()->json([
+                    'message' => "Les informations d'identification sont incorrectes.",
+                ], 401);
+            }
+
+            // Récupération de l'utilisateur
+            $user = User::where('email', $request->email)->firstOrFail();
+
+            return response()->json([
+                'token_type' => 'Bearer',
+                'access_token' => $content['access_token'],
+                'expires_in' => $content['expires_in'] ?? null,
+                'user' => $user
+            ]);
+
+        } catch (OAuthServerException $e) {
+            return response()->json([
+                'message' => "Les informations d'identification sont incorrectes.",
+                'error' => $e->getMessage()
+            ], 401);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => "Une erreur interne s'est produite. Veuillez réessayer plus tard.",
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+}
