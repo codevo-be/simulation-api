@@ -3,14 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use Carbon\Carbon;
 use GuzzleHttp\Psr7\ServerRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Laravel\Passport\Exceptions\OAuthServerException;
 use Laravel\Passport\Http\Controllers\AccessTokenController;
-use Laravel\Passport\Passport;
 
 class AuthController extends Controller
 {
@@ -47,26 +44,38 @@ class AuthController extends Controller
                 ], 401);
             }
 
-            // Récupération de l'utilisateur
             $user = User::where('email', $request->email)->firstOrFail();
 
             return response()->json([
-                'token_type' => 'Bearer',
-                'access_token' => $content['access_token'],
-                'expires_in' => $content['expires_in'] ?? null,
-                'user' => $user
+                "message" => "Utilisateur connecté !",
+                "data" => [
+                    'token_type' => 'Bearer',
+                    'access_token' => $content['access_token'],
+                    'expires_in' => $content['expires_in'] ?? null,
+                    'user' => $user->with('tenants')
+                ]
             ]);
 
         } catch (OAuthServerException $e) {
             return response()->json([
-                'message' => "Les informations d'identification sont incorrectes.",
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 401);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => "Une erreur interne s'est produite. Veuillez réessayer plus tard.",
-                'error' => $e->getMessage()
+                'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getAuthenticatedUser(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = Auth::user();
+
+        return response()->json([
+            "messae" => "L'utilisateur est connecté !",
+            "data" => [
+                "user" => $user->with('tenants')
+            ]
+        ]);
     }
 }
