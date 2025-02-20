@@ -47,12 +47,12 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->firstOrFail();
 
             return response()->json([
-                "message" => "Utilisateur connecté !",
                 "data" => [
                     'token_type' => 'Bearer',
                     'access_token' => $content['access_token'],
                     'expires_in' => $content['expires_in'] ?? null,
-                    'user' => $user->with('tenants')
+                    'user' => $user,
+                    'tenant' => $user->tenants->first()
                 ]
             ]);
 
@@ -72,10 +72,16 @@ class AuthController extends Controller
         $user = Auth::user();
 
         return response()->json([
-            "messae" => "L'utilisateur est connecté !",
             "data" => [
                 "user" => $user->with('tenants')
             ]
         ]);
+    }
+
+    public function logout(Request $request): \Illuminate\Http\Response
+    {
+        $request->user()->token()->revoke();
+
+        return response()->noContent();
     }
 }
