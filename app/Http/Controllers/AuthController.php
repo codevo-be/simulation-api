@@ -73,14 +73,14 @@ class AuthController extends Controller
 
         return response()->json([
             "data" => [
-                "user" => $user->with('tenants')
+                "user" => $user->with('tenants')->get()
             ]
         ]);
     }
 
     public function logout(Request $request): \Illuminate\Http\Response
     {
-        $request->user()->token()->revoke();
+        Auth::logout();
 
         return response()->noContent();
     }
