@@ -5,7 +5,7 @@ return [
 
     'allowed_methods' => ['*'], // Autoriser toutes les méthodes HTTP
 
-    'allowed_origins' => ['http://localhost:3000'], // Spécifiez exactement l'origine frontale ici
+    'allowed_origins' => [env('FRONTEND_URLS', 'http://localhost:3000')], // Spécifiez exactement l'origine frontale ici
 
     'allowed_origins_patterns' => [],
 

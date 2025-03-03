@@ -4,8 +4,11 @@ namespace App\Http\Middleware;
 
 use App\Models\UserTenant;
 use Closure;
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 class AuthTenantRequest
 {
@@ -16,7 +19,6 @@ class AuthTenantRequest
      */
     public function handle(Request $request, Closure $next)
     {
-        $user_id = Auth::id();
         $tenant_id = $request->header('X-Tenant');
 
         if (!$tenant_id) {
@@ -25,18 +27,30 @@ class AuthTenantRequest
             ], 400);
         }
 
-        if(!$user_id){
-            return response()->json([
-                'message' => 'Unauthorized'
-            ], 403);
+        try {
+            $user = Auth::user();
+
+            if (!$user) {
+                return response()->json(['message' => 'User not found'], 404);
+            }
+
+            $relation_exist = UserTenant::where('user_id', $user->id)
+                ->where('tenant_id', $tenant_id)
+                ->exists();
+
+            if (!$relation_exist) {
+                return response()->json(['message' => 'Not authorized to Tenant'], 403);
+            }
+
+            try {
+                tenancy()->initialize($tenant_id);
+            } catch (TenantCouldNotBeIdentifiedById $e) {
+                return response()->json(['message' => 'Tenant not found'], 403);
+            }
+
+            return $next($request);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Invalid or expired token', 'error' => $e->getMessage()], 401);
         }
-
-        $relation_exist = UserTenant::where('user_id', $user_id)->where('tenant_id', $tenant_id)->exists();
-
-        if(!$relation_exist){
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        return $next($request);
     }
 }
