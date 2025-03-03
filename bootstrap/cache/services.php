@@ -35,6 +35,7 @@
     31 => 'App\\Providers\\AuthServiceProvider',
     32 => 'App\\Providers\\TenancyServiceProvider',
     33 => 'Laravel\\Passport\\PassportServiceProvider',
+    34 => 'DigicoSimulation\\PhpServiceProvider',
   ),
   'eager' => 
   array (
@@ -57,6 +58,7 @@
     16 => 'App\\Providers\\AuthServiceProvider',
     17 => 'App\\Providers\\TenancyServiceProvider',
     18 => 'Laravel\\Passport\\PassportServiceProvider',
+    19 => 'DigicoSimulation\\PhpServiceProvider',
   ),
   'deferred' => 
   array (
