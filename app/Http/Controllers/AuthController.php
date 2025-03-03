@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Tenant;
 use App\Models\User;
 use GuzzleHttp\Psr7\ServerRequest;
 use Illuminate\Http\Request;
@@ -70,17 +71,23 @@ class AuthController extends Controller
     public function getAuthenticatedUser(Request $request): \Illuminate\Http\JsonResponse
     {
         $user = Auth::user();
+        $tenant_id = $request->header('X-Tenant');
 
         return response()->json([
             "data" => [
-                "user" => $user->with('tenants')->get()
+                "user" => $user,
+                "tenant" => Tenant::find($tenant_id)
             ]
         ]);
     }
 
     public function logout(Request $request): \Illuminate\Http\Response
     {
-        Auth::logout();
+        $user = Auth::user();
+
+        if($user){
+            $request->user()->token()->revoke();
+        }
 
         return response()->noContent();
     }

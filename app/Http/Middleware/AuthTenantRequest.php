@@ -8,6 +8,7 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 class AuthTenantRequest
 {
@@ -19,7 +20,6 @@ class AuthTenantRequest
     public function handle(Request $request, Closure $next)
     {
         $tenant_id = $request->header('X-Tenant');
-        $authorization = $request->header('Authorization');
 
         if (!$tenant_id) {
             return response()->json([
@@ -27,24 +27,8 @@ class AuthTenantRequest
             ], 400);
         }
 
-        if (!$authorization) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $jwtToken = str_replace('Bearer ', '', $authorization);
-
         try {
-            $publicKey = file_get_contents(storage_path('oauth-public.key'));
-            $decoded = JWT::decode($jwtToken, new Key($publicKey, 'RS256'));
-
-
-            if (!isset($decoded->sub)) {
-                return response()->json(['message' => 'Invalid token payload'], 401);
-            }
-
-            $userId = $decoded->sub;
-
-            $user = Auth::guard('api')->getProvider()->retrieveById($userId);
+            $user = Auth::user();
 
             if (!$user) {
                 return response()->json(['message' => 'User not found'], 404);
@@ -55,10 +39,14 @@ class AuthTenantRequest
                 ->exists();
 
             if (!$relation_exist) {
-                return response()->json(['message' => 'Unauthorized'], 403);
+                return response()->json(['message' => 'Not authorized to Tenant'], 403);
             }
 
-            Auth::setUser($user);
+            try {
+                tenancy()->initialize($tenant_id);
+            } catch (TenantCouldNotBeIdentifiedById $e) {
+                return response()->json(['message' => 'Tenant not found'], 403);
+            }
 
             return $next($request);
         } catch (\Exception $e) {

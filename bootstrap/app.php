@@ -18,7 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->alias([
-            'auth.tenant' => \App\Http\Middleware\AuthTenantRequest::class
+            'auth' => \App\Http\Middleware\CustomAuthenticate::class,
+            'auth.tenant' => \App\Http\Middleware\AuthTenantRequest::class,
+            'Pdf' => Barryvdh\DomPDF\Facade\Pdf::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
