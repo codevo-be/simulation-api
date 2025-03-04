@@ -110,7 +110,10 @@ class NordigenService
     {
         try{
             $response = $this->client->get("accounts/{$this->account_id}/transactions/", [
-                'headers' => ['Authorization' => "Bearer $this->token"]
+                'headers' => ['Authorization' => "Bearer $this->token"],
+                'query' => [
+                    'date_from' => \Illuminate\Support\Carbon::now()->subDay()->startOfDay()->toDateString()
+                ]
             ]);
 
             return json_decode($response->getBody()->getContents(), true);

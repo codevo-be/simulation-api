@@ -7,34 +7,31 @@ use App\Traits\AutoloadRelationships;
 use App\Traits\QuerySearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class Invoice extends Model
+class CreditNote extends Model
 {
     public const STATUS_DRAFT = "draft";
     public const STATUS_PENDING = "pending";
-    public const STATUS_PAYED = "payed";
-    public const STATUS_EXPIRED = "expired";
+    public const STATUS_REFUND = "refund";
 
     public const STATUSES = [
         self::STATUS_DRAFT,
         self::STATUS_PENDING,
-        self::STATUS_PAYED,
-        self::STATUS_EXPIRED
+        self::STATUS_REFUND
     ];
 
     use HasFactory, AutoloadRelationships, QuerySearch;
 
     protected $fillable = [
-        "status",
+        "invoice_id",
         "issuer",
         "date",
-        "due_date",
-        "payment_date",
+        "status",
         "subtotal",
         "taxes",
         "total",
+        "contact_id",
         "contact_name",
         "vat_number",
         "email",
@@ -43,8 +40,7 @@ class Invoice extends Model
         "street_number",
         "city",
         "zipcode",
-        "country",
-        "contact_id"
+        "country"
     ];
 
     protected $casts = [
@@ -60,33 +56,29 @@ class Invoice extends Model
     {
         parent::boot();
 
-        static::creating(function ($invoice) {
-            if (!$invoice->due_date) {
-                $invoice->due_date = now()->addDays(30);
+        static::creating(function ($credit_note) {
+            if (!$credit_note->date) {
+                $credit_note->date = now();
             }
 
-            if (!$invoice->date) {
-                $invoice->date = now();
-            }
-
-            if(!$invoice->issuer){
-                $invoice->issuer = Meta::getValue('invoice_default_issuer');
+            if(!$credit_note->issuer){
+                $credit_note->issuer = Meta::getValue('credit_note_default_issuer');
             }
         });
 
-        static::updating(function($invoice){
-            if ($invoice->isDirty('status') && $invoice->getOriginal('status') === 'draft') {
+        static::updating(function($credit_note){
+            if ($credit_note->isDirty('status') && $credit_note->getOriginal('status') === 'draft') {
                 $requiredFields = ['issuer', 'total', 'contact_name', 'street', 'street_number', 'city', 'zipcode', 'country'];
 
                 foreach ($requiredFields as $field) {
-                    if (empty($invoice->$field)) {
+                    if (empty($credit_note->$field)) {
                         throw ValidationException::withMessages([
                             $field => "Le champ {$field} est requis pour valider la facture."
                         ]);
                     }
                 }
 
-                if (empty($invoice->identifier_number)) {
+                if (empty($credit_note->identifier_number)) {
                     $year = now()->year;
 
                     $lastOffer = self::whereYear('date', $year)
@@ -96,23 +88,18 @@ class Invoice extends Model
 
                     $nextNumber = $lastOffer ? $lastOffer->identifier_number + 1 : 1;
 
-                    $invoice->identifier_number = $nextNumber;
-                    $invoice->identifier = sprintf('%d/%03d', $year, $nextNumber);
+                    $credit_note->identifier_number = $nextNumber;
+                    $credit_note->identifier = sprintf('%d/%03d', $year, $nextNumber);
                 }
-
-                if(empty($invoice->structured_communication)){
-                    $invoice->structured_communication = \Diji\Billing\Helpers\Invoice::generateStructuredCommunication($invoice->identifier_number);
-                }
-
             }
         });
 
-        static::deleting(function ($invoice) {
-            if (!empty($invoice->identifier)) {
+        static::deleting(function ($credit_note) {
+            if (!empty($credit_note->identifier)) {
                 throw new \Exception("Invoice cannot be deleted !");
             }
 
-            $invoice->items()->delete();
+            $credit_note->items()->delete();
         });
     }
 
