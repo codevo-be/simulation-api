@@ -2,10 +2,12 @@
 
 namespace Diji\Billing\Models;
 
+use App\Models\Meta;
 use App\Traits\AutoloadRelationships;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class Invoice extends Model
 {
@@ -63,10 +65,24 @@ class Invoice extends Model
             if (!$invoice->date) {
                 $invoice->date = now();
             }
+
+            if(!$invoice->issuer){
+                $invoice->issuer = Meta::getValue('invoice_default_issuer');
+            }
         });
 
         static::updating(function($invoice){
             if ($invoice->isDirty('status') && $invoice->getOriginal('status') === 'draft') {
+                $requiredFields = ['issuer', 'total', 'contact_name', 'street', 'street_number', 'city', 'zipcode', 'country'];
+
+                foreach ($requiredFields as $field) {
+                    if (empty($invoice->$field)) {
+                        throw ValidationException::withMessages([
+                            $field => "Le champ {$field} est requis pour valider la facture."
+                        ]);
+                    }
+                }
+
                 if (empty($invoice->identifier_number)) {
                     $year = now()->year;
 
@@ -84,6 +100,7 @@ class Invoice extends Model
                 if(empty($invoice->structured_communication)){
                     $invoice->structured_communication = \Diji\Billing\Helpers\Invoice::generateStructuredCommunication($invoice->identifier_number);
                 }
+
             }
         });
 

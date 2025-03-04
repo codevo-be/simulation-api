@@ -10,6 +10,7 @@ use Diji\Billing\Resources\InvoiceResource;
 use Diji\Billing\Models\Invoice;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Stancl\Tenancy\Tenancy;
 
 class InvoiceController extends Controller
@@ -99,12 +100,46 @@ class InvoiceController extends Controller
         return response()->noContent();
     }
 
-    public function viewPdf(Request $request, int $invoice_id)
+    public function pdf(Request $request, int $invoice_id)
     {
         $invoice = Invoice::findOrFail($invoice_id)->load('items');
 
         $pdf = PDF::loadView('billing::invoice', $invoice->toArray());
 
         return $pdf->stream("invoice-$invoice->identifier_number.pdf");
+    }
+
+    public function email(Request $request, int $invoice_id)
+    {
+        $invoice = Invoice::findOrFail($invoice_id)->load('items');
+
+        $pdf = PDF::loadView('billing::invoice', $invoice->toArray());
+
+        try {
+            Mail::send('billing::email', ["body" => $request->body], function ($message) use($request, $pdf) {
+                $tenant = tenant();
+                $message->from([env('MAIL_FROM_ADDRESS'), $tenant->name]);
+                $message->to($request->to);
+
+                if($request->subject){
+                    $message->subject($request->subject);
+                }
+
+                if($request->cc){
+                    $message->cc($request->cc);
+                }
+
+                $message->attachData($pdf->output(), "aa.pdf", [
+                    "mime" => 'application/pdf'
+                ]);
+            });
+        }catch (\Exception $e){
+            return response()->json([
+                "message" => $e->getMessage()
+            ]);
+        }
+
+
+        return response()->noContent();
     }
 }

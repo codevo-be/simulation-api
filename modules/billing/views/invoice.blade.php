@@ -71,7 +71,7 @@
             </tr>
             </thead>
             <tbody>
-                @foreach($items as $item)
+                @foreach(($items ?? []) as $item)
                     <tr>
                         <td style="padding: 6px 15px; font-size: 10px; border-top: 1px solid #F2F2F2;">{!! $item['name'] !!}</td>
 
