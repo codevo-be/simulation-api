@@ -13,4 +13,5 @@ Route::group([
 
 
     Route::get('/test', [GoogleSheetController::class, 'test']);
+    Route::get('/folder', [GoogleSheetController::class, 'createFolder']);
 });

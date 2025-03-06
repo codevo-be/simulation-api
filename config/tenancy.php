@@ -172,13 +172,13 @@ return [
     ],
 
     /**
-     * Should tenancy Routes be registered.
+     * Should tenancy routes be registered.
      *
-     * Tenancy Routes include tenant asset Routes. By default, this route is
+     * Tenancy routes include tenant asset routes. By default, this route is
      * enabled. But it may be useful to disable them if you use external
      * storage (e.g. S3 / Dropbox) or have a custom asset controller.
      */
-    'Routes' => true,
+    'routes' => true,
 
     /**
      * Parameters used by the tenants:migrate command.

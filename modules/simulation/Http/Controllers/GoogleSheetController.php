@@ -3,6 +3,7 @@
 namespace DigicoSimulation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use DigicoSimulation\GoogleDrive;
 use DigicoSimulation\GoogleSheet;
 use Illuminate\Http\JsonResponse;
 
@@ -17,11 +18,17 @@ class GoogleSheetController extends Controller
     public function test(): JsonResponse
     {
         $start_test = microtime(true);
-        //$this->sheet->replaceSheetData();
-        //$test = $this->sheet->readValues("Input");
-        sleep(1);
+        $this->sheet->replaceSheetData();
+        $test = $this->sheet->readValues("Input");
         $end_test = microtime(true);
 
-        return response()->json(($end_test - $start_test));
+        return response()->json($test);
+    }
+
+    public function createFolder(): JsonResponse
+    {
+        $googleDrive = new  GoogleDrive();
+        $folders = $googleDrive->getFolders();
+        return  response()->json($folders);
     }
 }

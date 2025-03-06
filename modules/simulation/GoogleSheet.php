@@ -3,25 +3,51 @@
 namespace DigicoSimulation;
 
 use Google\Client;
+use Google\Service\Drive;
+use Google\Service\Drive\DriveFile;
 use Google\Service\Sheets;
 use Google\Service\Sheets\ValueRange;
 
-class GoogleSheet extends Client
+class GoogleSheet
 {
     private GoogleClient $client;
     private Sheets $sheet;
-    //private const SHEET_ID = "10FIqjo-qRL02UDmj8URqlAbJWGrI-2QSwO1-NuQdoi8";
-    private const SHEET_ID = "1cpFjWHUXFKcqgoJ4IoPe09cMiTVI3RZYHxwDLb1StCY";
+    private DriveFile $drawer;
+    private const SHEET_ID = "10FIqjo-qRL02UDmj8URqlAbJWGrI-2QSwO1-NuQdoi8";
+    //Goprivate const SHEET_ID = "1cpFjWHUXFKcqgoJ4IoPe09cMiTVI3RZYHxwDLb1StCY";
     public function __construct()
     {
-        parent::__construct();
         $this->client = new GoogleClient();
         $this->sheet = new Sheets($this->client);
+        $this->drawer = new DriveFile();
+    }
+
+    public function duplicateSheet()
+    {
+        $drive = new Drive($this->client);
+
+        try {
+            $fileMetaData = new DriveFile();
+            return $drive->files->copy(self::SHEET_ID, $this->drawer);
+        } catch (\Exception $e) {
+            throw new \RuntimeException("Failed to duplicate the spreadsheet: " .$e->getMessage());
+        }
+    }
+
+    public function handle()
+    {
+        try
+        {
+            $googleSheet = new GoogleSheet();
+        } catch (\Exception $e)
+        {
+
+        }
     }
 
     public function readValues($sheet = "output")
     {
-        return $this->sheet->spreadsheets_values->get(self::SHEET_ID, 'Output BLEU!C4:C14');
+        return $this->sheet->spreadsheets_values->get(self::SHEET_ID, 'Input');
     }
 
     public function replaceSheetData()
