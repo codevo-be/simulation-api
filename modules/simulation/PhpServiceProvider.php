@@ -2,6 +2,7 @@
 
 namespace DigicoSimulation;
 
+use DigicoSimulation\Services\GoogleSheetService;
 use Illuminate\Support\ServiceProvider;
 
 class PhpServiceProvider extends ServiceProvider
@@ -10,7 +11,7 @@ class PhpServiceProvider extends ServiceProvider
     {
         $this->registerTenantMigrations();
 
-        $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations'); //TODO Y'a pas de migration database dansle module ? Il faut le rajouter ou mettre dnasun général ?
+        $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations'); //TODO Y'a pas de migration database dans le module ? Il faut le rajouter ou mettre dnasun général ?
 
         $this->loadRoutesFrom(__DIR__ . '/Routes/api.php');
     }
