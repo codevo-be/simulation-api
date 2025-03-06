@@ -9,8 +9,12 @@
             <tr>
                 <td style="width: 50%">
                     <h1 style="font-weight: 700; font-size: 14px;">{!! $issuer["name"] !!}</h1>
+
                     <p style=" font-size: 14px;">
-                        {!! $issuer["address"] !!}
+                        {!! $issuer["street"] !!} {!! $issuer["street_number"] !!}
+                    </p>
+                    <p style=" font-size: 14px;">
+                        {!! $issuer["zipcode"] !!} {!! $issuer["city"] !!}
                     </p>
 
                     @if(isset($issuer["vat_number"]))
@@ -38,7 +42,7 @@
     <div style="margin-top:40px; margin-bottom: 100px;">
         <div style="margin-bottom: 60px;">
             <h2 style="font-size:36px; font-weight: bold;">
-                <span style="">Facture </span>
+                <span style="">Note de crédit </span>
                 <span style="color: #A5A5A5;">{!! $identifier !!}</span>
             </h2>
 
@@ -49,12 +53,6 @@
                     <td>{!! \Illuminate\Support\Carbon::parse($date)->format('d/m/Y') !!}</td>
                 </tr>
 
-                @if($due_date)
-                    <tr>
-                        <td style="padding-right: 10px; padding-top: 5px;">Echéance</td>
-                        <td>{!! \Illuminate\Support\Carbon::parse($due_date)->format('d/m/Y') !!}</td>
-                    </tr>
-                @endif
                 </tbody>
             </table>
         </div>
@@ -110,13 +108,6 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-
-        <div style="margin-top: 100px;">
-            <p style="margin-top:10px; font-size: 14px;">
-                Veuillez payer le montant de <strong>{!! \Diji\Billing\Helpers\PricingHelper::formatCurrency($total) !!}</strong> sur le compte <strong>{!! $issuer['iban'] !!}</strong> avant le <strong>{!! \Illuminate\Support\Carbon::parse($due_date)->format('d/m/Y') !!}</strong> en mentionnant la référence <strong>{!! \Diji\Billing\Helpers\Invoice::formatStructuredCommunication($structured_communication) !!}</strong>
-            </p>
-            <p  style="margin-top:10px; font-size: 14px;">Merci de votre confiance !</p>
         </div>
 
     </div>
