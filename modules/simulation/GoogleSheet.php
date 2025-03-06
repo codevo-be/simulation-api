@@ -22,17 +22,6 @@ class GoogleSheet
         $this->drawer = new DriveFile();
     }
 
-    public function duplicateSheet()
-    {
-        $drive = new Drive($this->client);
-
-        try {
-            $fileMetaData = new DriveFile();
-            return $drive->files->copy(self::SHEET_ID, $this->drawer);
-        } catch (\Exception $e) {
-            throw new \RuntimeException("Failed to duplicate the spreadsheet: " .$e->getMessage());
-        }
-    }
 
     public function handle()
     {

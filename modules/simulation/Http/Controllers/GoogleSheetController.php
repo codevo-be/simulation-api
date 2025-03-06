@@ -25,10 +25,13 @@ class GoogleSheetController extends Controller
         return response()->json($test);
     }
 
-    public function createFolder(): JsonResponse
+    public function createFolder(): JSonResponse
     {
+        $start_test = microtime(true);
         $googleDrive = new  GoogleDrive();
-        $folders = $googleDrive->getFolders();
-        return  response()->json($folders);
+        $folders = $googleDrive->copySheetToDrive("1cpFjWHUXFKcqgoJ4IoPe09cMiTVI3RZYHxwDLb1StCY", "1q6TwRMot15jwSB1ni8Hl2ysWJ7TEwm7z");
+        //return  response()->json($folders);
+        $end_test = microtime(true);
+        return response()->json($end_test -  $start_test);
     }
 }

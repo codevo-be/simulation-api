@@ -91,4 +91,28 @@ class GoogleDrive
             return "Erreur lors de la suppression : " . $e->getMessage();
         }
     }
+
+    public function copySheetToDrive($sourceSheetId, $destinationFolderId)
+    {
+        try {
+            $driveService = new Drive($this->client);
+
+            // 1️⃣ Copier le fichier
+            $fileMetadata = new DriveFile([
+                'name' => 'Copie excel noveway',
+                'parents' => [$destinationFolderId] // Définir le dossier de destination
+            ]);
+
+            $copiedFile = $driveService->files->copy($sourceSheetId, $fileMetadata, [
+                'fields' => 'id'
+            ]);
+
+            $copiedFileId = $copiedFile->id;
+            printf("Copie créée avec l'ID : %s\n", $copiedFileId);
+
+            return $copiedFileId;
+        } catch (\Exception $e) {
+            dd("Erreur : " . $e->getMessage());
+        }
+    }
 }
