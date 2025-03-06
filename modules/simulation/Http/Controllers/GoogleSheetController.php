@@ -3,40 +3,25 @@
 namespace DigicoSimulation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use DigicoSimulation\Services\GoogleSheetService;
+use DigicoSimulation\GoogleSheet;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 
 class GoogleSheetController extends Controller
 {
-    protected GoogleSheetService $googleSheetsService;
-
+    private GoogleSheet $sheet;
     public function __construct()
     {
-        $this->googleSheetsService = new GoogleSheetService();
-    }
-
-    public function read(): JsonResponse
-    {
-        $data = $this->googleSheetsService->readSheet('Feuille1');
-        return response()->json($data);
-    }
-
-    public function write()
-    {
-        $data = [
-            ['Nom', 'Âge', 'Ville'],
-            ['Alice', 25, 'Paris'],
-            ['Bob', 30, 'Lyon']
-        ];
-
-        $this->googleSheetsService->writeSheet('Feuille2', $data);
-
-        return response()->json(['message' => 'Données ajoutées avec succès']);
+        $this->sheet = new GoogleSheet();
     }
 
     public function test(): JsonResponse
     {
-        return response()->json(['message' => 'Test réussi']);
+        $start_test = microtime(true);
+        //$this->sheet->replaceSheetData();
+        //$test = $this->sheet->readValues("Input");
+        sleep(1);
+        $end_test = microtime(true);
+
+        return response()->json(($end_test - $start_test));
     }
 }

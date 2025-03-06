@@ -2,7 +2,6 @@
 
 namespace DigicoSimulation;
 
-use DigicoSimulation\Services\GoogleSheetService;
 use Illuminate\Support\ServiceProvider;
 
 class PhpServiceProvider extends ServiceProvider
