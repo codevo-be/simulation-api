@@ -31,14 +31,17 @@
     27 => 'Carbon\\Laravel\\ServiceProvider',
     28 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     29 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    30 => 'Stancl\\Tenancy\\TenancyServiceProvider',
-    31 => 'App\\Providers\\AppServiceProvider',
-    32 => 'App\\Providers\\AuthServiceProvider',
-    33 => 'App\\Providers\\TenancyServiceProvider',
-    34 => 'Laravel\\Passport\\PassportServiceProvider',
-    35 => 'Barryvdh\\DomPDF\\ServiceProvider',
-    36 => 'Diji\\Billing\\BillingServiceProvider',
-    37 => 'Diji\\Contact\\ContactServiceProvider',
+    30 => 'Revolution\\Google\\Sheets\\Providers\\SheetsServiceProvider',
+    31 => 'Revolution\\Google\\Client\\Providers\\GoogleServiceProvider',
+    32 => 'Stancl\\Tenancy\\TenancyServiceProvider',
+    33 => 'App\\Providers\\AppServiceProvider',
+    34 => 'App\\Providers\\AuthServiceProvider',
+    35 => 'App\\Providers\\TenancyServiceProvider',
+    36 => 'Laravel\\Passport\\PassportServiceProvider',
+    37 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    38 => 'Diji\\Billing\\BillingServiceProvider',
+    39 => 'Diji\\Contact\\ContactServiceProvider',
+    40 => 'DigicoSimulation\\PhpServiceProvider',
   ),
   'eager' => 
   array (
@@ -57,14 +60,16 @@
     12 => 'Carbon\\Laravel\\ServiceProvider',
     13 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     14 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    15 => 'Stancl\\Tenancy\\TenancyServiceProvider',
-    16 => 'App\\Providers\\AppServiceProvider',
-    17 => 'App\\Providers\\AuthServiceProvider',
-    18 => 'App\\Providers\\TenancyServiceProvider',
-    19 => 'Laravel\\Passport\\PassportServiceProvider',
-    20 => 'Barryvdh\\DomPDF\\ServiceProvider',
-    21 => 'Diji\\Billing\\BillingServiceProvider',
-    22 => 'Diji\\Contact\\ContactServiceProvider',
+    15 => 'Revolution\\Google\\Client\\Providers\\GoogleServiceProvider',
+    16 => 'Stancl\\Tenancy\\TenancyServiceProvider',
+    17 => 'App\\Providers\\AppServiceProvider',
+    18 => 'App\\Providers\\AuthServiceProvider',
+    19 => 'App\\Providers\\TenancyServiceProvider',
+    20 => 'Laravel\\Passport\\PassportServiceProvider',
+    21 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    22 => 'Diji\\Billing\\BillingServiceProvider',
+    23 => 'Diji\\Contact\\ContactServiceProvider',
+    24 => 'DigicoSimulation\\PhpServiceProvider',
   ),
   'deferred' => 
   array (
@@ -220,6 +225,7 @@
     'Laravel\\Sail\\Console\\InstallCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'Laravel\\Sail\\Console\\PublishCommand' => 'Laravel\\Sail\\SailServiceProvider',
     'command.tinker' => 'Laravel\\Tinker\\TinkerServiceProvider',
+    'Revolution\\Google\\Sheets\\Contracts\\Factory' => 'Revolution\\Google\\Sheets\\Providers\\SheetsServiceProvider',
   ),
   'when' => 
   array (
@@ -266,6 +272,9 @@
     array (
     ),
     'Laravel\\Tinker\\TinkerServiceProvider' => 
+    array (
+    ),
+    'Revolution\\Google\\Sheets\\Providers\\SheetsServiceProvider' => 
     array (
     ),
   ),

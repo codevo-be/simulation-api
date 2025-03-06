@@ -53,6 +53,19 @@
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
+  'revolution/laravel-google-sheets' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Revolution\\Google\\Sheets\\Providers\\SheetsServiceProvider',
+      1 => 'Revolution\\Google\\Client\\Providers\\GoogleServiceProvider',
+    ),
+    'google/apiclient-services' => 
+    array (
+      0 => 'Drive',
+      1 => 'Sheets',
+    ),
+  ),
   'stancl/tenancy' => 
   array (
     'aliases' => 

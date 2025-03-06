@@ -2,13 +2,13 @@
 
 namespace Diji\Contact\Models;
 
+use App\Traits\QuerySearch;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Stancl\Tenancy\Database\Concerns\BelongsToTenant;
 
 class Contact extends Model
 {
-    use HasFactory;
+    use HasFactory, QuerySearch;
 
     protected $fillable = [
         "firstname",
@@ -18,6 +18,8 @@ class Contact extends Model
         "company_name",
         "vat_number",
     ];
+
+    protected array $searchable = ['display_name', 'email', 'vat_number'];
 
     protected static function boot()
     {

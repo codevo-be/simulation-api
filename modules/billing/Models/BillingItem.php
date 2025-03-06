@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 class BillingItem extends Model
 {
     public const MODEL_TYPES = [
-        "invoice" => Invoice::class
+        "invoice" => Invoice::class,
+        "credit_note" => CreditNote::class
     ];
 
     protected $fillable = ["position", "model_type", "model_id", "name", "quantity", "vat", "cost", "retail"];
