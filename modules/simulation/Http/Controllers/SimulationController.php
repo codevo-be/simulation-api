@@ -3,7 +3,9 @@
 namespace DigicoSimulation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use DigicoSimulation\Http\Requests\CreateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
+use DigicoSimulation\Http\Resources\SuccessfulCreationResource;
 use DigicoSimulation\Models\Simulation;
 use DigicoSimulation\Services\Google\GoogleDriveService;
 use DigicoSimulation\Services\QuestionService;
@@ -23,16 +25,23 @@ class SimulationController extends Controller
         $this->simulationEntryService = new SimulationEntryService();
         $this->simulationService = new SimulationService();
     }
-    public function store(Request $request): JsonResponse
-    {
-        return response()->json("Submit du form");
-    }
-
-    public function update(UpdateSimulationRequest $request, string $spreadsheet_id): mixed
+    public function store(CreateSimulationRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $driveService = new GoogleDriveService();
+        $spreadsheetId = $driveService->copyFile();
+        $this->simulationService->create($spreadsheetId, $data['current_step']);
 
-        if ($spreadsheet_id == "0") //TODO verif si null ?
+        return response()->json([
+            'message' => 'Simulation created successfully',
+            'simulation_id' => $spreadsheetId,
+        ], 201); //TODO Soucis, la copie prend du temps et on ne peut pas avancer sur le formulaire si l'id de simulation est ceui du spread
+    }
+
+    public function update(UpdateSimulationRequest $request, string $spreadsheet_id): JsonREsponse
+    {
+        $data = $request->validated();
+        if ($spreadsheet_id == "") //TODO Utiliser dnas le front les onSuccess des useMutation pour pouvoir enchainer les méthodes
         {
             $driveService = new GoogleDriveService();
             $spreadsheet_id = $driveService->copyFile();
