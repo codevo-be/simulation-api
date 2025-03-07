@@ -42,7 +42,7 @@ class GoogleDrive
                 'sendNotificationEmail' => false, // Ne pas envoyer d'email de notification
                 'supportsAllDrives' => true // Obligatoire si tu travailles avec un Shared Drive
             ]);
-
+            print("");
             printf("Permission accordée à : %s\n", 'alexis.vandenbroeck@gmail.com');
 
             return $folderId;
@@ -78,41 +78,6 @@ class GoogleDrive
         } catch (\Exception $e)
         {
             dd("Error message: " . $e->getMessage());
-        }
-    }
-
-    public function deleteFolder($folderId)
-    {
-        try {
-            $driverService = new Drive($this->client);
-            $driverService->files->delete($folderId);
-            return "Dossier supprimé avec succès.";
-        } catch (\Exception $e) {
-            return "Erreur lors de la suppression : " . $e->getMessage();
-        }
-    }
-
-    public function copySheetToDrive($sourceSheetId, $destinationFolderId)
-    {
-        try {
-            $driveService = new Drive($this->client);
-
-            // 1️⃣ Copier le fichier
-            $fileMetadata = new DriveFile([
-                'name' => 'Copie excel noveway',
-                'parents' => [$destinationFolderId] // Définir le dossier de destination
-            ]);
-
-            $copiedFile = $driveService->files->copy($sourceSheetId, $fileMetadata, [
-                'fields' => 'id'
-            ]);
-
-            $copiedFileId = $copiedFile->id;
-            printf("Copie créée avec l'ID : %s\n", $copiedFileId);
-
-            return $copiedFileId;
-        } catch (\Exception $e) {
-            dd("Erreur : " . $e->getMessage());
         }
     }
 }

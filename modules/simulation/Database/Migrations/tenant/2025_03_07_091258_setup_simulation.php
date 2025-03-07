@@ -9,10 +9,10 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): void //TODO mettreun on update update pourles clefs étrangères ?
     {
         Schema::create('simulations', function (Blueprint $table) {
-            $table->id();
+            $table->string('spreadsheet_id', 50)->primary();
             $table->foreignId('contact_id')
                 ->nullable()->constrained('contacts')
                 ->nullOnDelete();
@@ -22,18 +22,20 @@ return new class extends Migration
         });
 
         Schema::create('questions',  function (Blueprint $table) {
-            $table->id();
-            $table->string('label', 100);
+            $table->string('label', 100)->primary();
             $table->string('cell_reference', 10);
             $table->timestamps();
         });
 
         Schema::create('simulation_entries',  function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('simulation_id')->constrained();
-            $table->foreignId('question_id')->constrained();
+            $table->string('spreadsheet_id', 50);
+            $table->string('label', 100);
+            $table->unique(['spreadsheet_id', 'label'], 'unique_simulation_question_ids');
             $table->string('response', 255);
             $table->timestamps();
+
+            $table->foreign('spreadsheet_id')->references('spreadsheet_id')->on('simulations');
+            $table->foreign('label')->references('label')->on('questions');
         });
     }
 
