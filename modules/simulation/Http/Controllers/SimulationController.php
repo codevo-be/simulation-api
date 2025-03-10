@@ -30,18 +30,18 @@ class SimulationController extends Controller
         $data = $request->validated();
         $driveService = new GoogleDriveService();
         $spreadsheetId = $driveService->copyFile();
-        $this->simulationService->create($spreadsheetId, $data['current_step']);
+        $simulationId = $this->simulationService->create($spreadsheetId, $data['current_step']);
 
         return response()->json([
             'message' => 'Simulation created successfully',
-            'simulation_id' => $spreadsheetId,
-        ], 201); //TODO Soucis, la copie prend du temps et on ne peut pas avancer sur le formulaire si l'id de simulation est ceui du spread
+            'simulation_id' => $simulationId,
+        ], 201);
     }
 
     public function update(UpdateSimulationRequest $request, string $spreadsheet_id): JsonREsponse
     {
         $data = $request->validated();
-        if ($spreadsheet_id == "") //TODO Utiliser dnas le front les onSuccess des useMutation pour pouvoir enchainer les méthodes
+        if ($spreadsheet_id == "")
         {
             $driveService = new GoogleDriveService();
             $spreadsheet_id = $driveService->copyFile();

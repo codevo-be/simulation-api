@@ -3,10 +3,10 @@
 namespace DigicoSimulation\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Simulation extends Model
 {
-    protected $primaryKey = 'spreadsheet_id';
     protected $keyType = 'string';
     public $incrementing = false;
 
@@ -19,4 +19,17 @@ class Simulation extends Model
         'current_step',
         'spreadsheet_id'
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::creating(function ($simulation)
+        {
+            if(empty($simulation->id))
+            {
+                $simulation->id = (string) Str::uuid();
+            }
+        });
+    }
 }
