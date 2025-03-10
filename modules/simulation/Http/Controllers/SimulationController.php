@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use DigicoSimulation\Http\Requests\CreateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
 use DigicoSimulation\Http\Resources\SuccessfulCreationResource;
+use DigicoSimulation\Jobs\CopyFileToGoogleDriveJob;
 use DigicoSimulation\Models\Simulation;
 use DigicoSimulation\Services\Google\GoogleDriveService;
 use DigicoSimulation\Services\QuestionService;
@@ -28,9 +29,11 @@ class SimulationController extends Controller
     public function store(CreateSimulationRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $simulationId = $this->simulationService->create($data['current_step']);
         $driveService = new GoogleDriveService();
-        $spreadsheetId = $driveService->copyFile();
-        $simulationId = $this->simulationService->create($spreadsheetId, $data['current_step']);
+        $spreadsheet_id = $driveService->copyFile();
+        $this->simulationService->linkSpreadsheetIdToSimulation($simulationId, $spreadsheet_id);
+        //CopyFileToGoogleDriveJob::dispatch($simulationId, new GoogleDriveService(), $this->simulationService); TODO à changer pour utiliser le job
 
         return response()->json([
             'message' => 'Simulation created successfully',

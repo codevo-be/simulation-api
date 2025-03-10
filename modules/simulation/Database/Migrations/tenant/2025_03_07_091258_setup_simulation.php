@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('simulations', function (Blueprint $table) {
             $table->uuid('id')->default(DB::raw('(UUID())'))->primary();
-            $table->string('spreadsheet_id', 50);
+            $table->string('spreadsheet_id', 50)->nullable();
             $table->foreignId('contact_id')
                 ->nullable()->constrained('contacts')
                 ->nullOnDelete();

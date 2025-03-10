@@ -7,10 +7,9 @@ use DigicoSimulation\Models\Simulation;
 class SimulationService
 {
 
-    public function create($spreadsheetId, $currentStep)
+    public function create($currentStep)
     {
         $simulation =  Simulation::create([
-            'spreadsheet_id' => $spreadsheetId,
             'current_step' => $currentStep,
         ]);
 
@@ -20,5 +19,12 @@ class SimulationService
     public function exists(string $spreadsheet_id): bool
     {
         return Simulation::where('spreadsheet_id', $spreadsheet_id)->exists();
+    }
+
+    public function linkSpreadsheetIdToSimulation(string $simulationId, string $spreadsheet_id): void
+    {
+        $simulation = Simulation::where('id',  $simulationId)->first();
+        $simulation->spreadsheet_id = $spreadsheet_id;
+        $simulation->save();
     }
 }
