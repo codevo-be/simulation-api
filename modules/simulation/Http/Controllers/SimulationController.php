@@ -52,8 +52,7 @@ class SimulationController extends Controller
 
         $question = $this->questionService->findQuestionFromLabel($data['label']);
         //TODO vérifier si la question existe -> renvoyer le code correct.
-        //TODO Vérifier s'il 'existe pas déjà
-        $this->simulationEntryService->newEntry($simulationId, $question->label, $data['response']);
+        $this->simulationEntryService->newOrUpdate($simulationId, $question->label, $data['response']);
 
         return response()->json($question);
     }
