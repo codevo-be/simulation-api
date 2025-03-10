@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -12,7 +13,8 @@ return new class extends Migration
     public function up(): void //TODO mettreun on update update pourles clefs étrangères ?
     {
         Schema::create('simulations', function (Blueprint $table) {
-            $table->string('spreadsheet_id', 50)->primary();
+            $table->uuid('id')->default(DB::raw('(UUID())'))->primary();
+            $table->string('spreadsheet_id', 50);
             $table->foreignId('contact_id')
                 ->nullable()->constrained('contacts')
                 ->nullOnDelete();
@@ -28,13 +30,13 @@ return new class extends Migration
         });
 
         Schema::create('simulation_entries',  function (Blueprint $table) {
-            $table->string('spreadsheet_id', 50);
+            $table->uuid('simulation_id');
             $table->string('label', 100);
-            $table->unique(['spreadsheet_id', 'label'], 'unique_simulation_question_ids');
+            $table->unique(['simulation_id', 'label'], 'unique_simulation_question_ids');
             $table->string('response', 255);
             $table->timestamps();
 
-            $table->foreign('spreadsheet_id')->references('spreadsheet_id')->on('simulations');
+            $table->foreign('simulation_id')->references('id')->on('simulations');
             $table->foreign('label')->references('label')->on('questions');
         });
     }
