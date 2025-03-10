@@ -37,30 +37,23 @@ class SimulationController extends Controller
 
         return response()->json([
             'message' => 'Simulation created successfully',
-            'simulation_id' => $simulationId,
+            'id' => $simulationId,
         ], 201);
     }
 
-    public function update(UpdateSimulationRequest $request, string $spreadsheet_id): JsonREsponse
+    public function update(UpdateSimulationRequest $request, string $simulationId): JsonREsponse
     {
         $data = $request->validated();
-        if ($spreadsheet_id == "")
+        if (!$this->simulationService->exists($simulationId))
         {
-            $driveService = new GoogleDriveService();
-            $spreadsheet_id = $driveService->copyFile();
-
-            Simulation::create([
-                'spreadsheet_id' => $spreadsheet_id,
-                'current_step' => 'installationType',
-            ]);
-        }
-        else if (!$this->simulationService->exists($spreadsheet_id))
-        {
-            throw new \Exception("La spreadsheet n'existe pas");
+            //TODO Faire une vérification si une spreadsheet est liée ?
+            throw new \Exception("La simulation n'existe pas"); //TODO faire une réponse appropriée
         }
 
         $question = $this->questionService->findQuestionFromLabel($data['label']);
-        $this->simulationEntryService->newEntry($spreadsheet_id, $question->label, $data['response']);
+        //TODO vérifier si la question existe -> renvoyer le code correct.
+        //TODO Vérifier s'il 'existe pas déjà
+        $this->simulationEntryService->newEntry($simulationId, $question->label, $data['response']);
 
         return response()->json($question);
     }

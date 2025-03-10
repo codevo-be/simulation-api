@@ -16,9 +16,9 @@ class SimulationService
         return $simulation->id;
     }
 
-    public function exists(string $spreadsheet_id): bool
+    public function exists(string $simulationId): bool
     {
-        return Simulation::where('spreadsheet_id', $spreadsheet_id)->exists();
+        return Simulation::where('id', $simulationId)->exists();
     }
 
     public function linkSpreadsheetIdToSimulation(string $simulationId, string $spreadsheet_id): void
