@@ -12,14 +12,12 @@ class GoogleSheet
 {
     private GoogleClient $client;
     private Sheets $sheet;
-    private DriveFile $drawer;
     private const SHEET_ID = "10FIqjo-qRL02UDmj8URqlAbJWGrI-2QSwO1-NuQdoi8";
     //private const SHEET_ID = "1cpFjWHUXFKcqgoJ4IoPe09cMiTVI3RZYHxwDLb1StCY";
     public function __construct()
     {
         $this->client = new GoogleClient();
         $this->sheet = new Sheets($this->client);
-        $this->drawer = new DriveFile();
     }
 
     public function readValues($sheet = "output")

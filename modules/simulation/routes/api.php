@@ -8,5 +8,6 @@ Route::group([
 ], function () {
     Route::middleware(['auth:api', "auth.tenant"])->group(function () {
         Route::resource("/simulation", SimulationController::class)->only(['show', 'store',  'update']);
+        Route::post("/simulation/generate", [SimulationController::class, "generate"]);
     });
 });

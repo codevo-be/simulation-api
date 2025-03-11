@@ -4,12 +4,15 @@ namespace DigicoSimulation\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use DigicoSimulation\Http\Requests\CreateSimulationRequest;
+use DigicoSimulation\Http\Requests\GenerateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
 use DigicoSimulation\Services\Google\GoogleDriveService;
+use DigicoSimulation\Services\Google\GoogleSheetService;
 use DigicoSimulation\Services\QuestionService;
 use DigicoSimulation\Services\SimulationEntryService;
 use DigicoSimulation\Services\SimulationService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class SimulationController extends Controller
 {
@@ -53,7 +56,7 @@ class SimulationController extends Controller
         if (!$this->simulationService->exists($simulationId))
         {
             //TODO Faire une vérification si une spreadsheet est liée ?
-            throw new \Exception("La simulation n'existe pas"); //TODO faire une réponse appropriée
+            throw new \Exception("La simulation n'existe pas : " . $simulationId); //TODO faire une réponse appropriée
         }
 
         $question = $this->questionService->findQuestionFromLabel($data['label']);
@@ -65,5 +68,22 @@ class SimulationController extends Controller
         $test = $this->simulationEntryService->newOrUpdate($simulationId, $question->label, $data['response']);
 
         return response()->json($test);
+    }
+
+    public function generate(GenerateSimulationRequest $request) : JsonResponse
+    {
+
+        $time_start = microtime(true);
+
+        $data = $request->validated();
+        $simulationId = $data['simulation_id'];
+        $entries = $this->simulationEntryService->getSimulationEntries($simulationId);
+        $spreadsheetId = $this->simulationService->getSpreadsheetId($simulationId);
+
+        $sheetService = new GoogleSheetService();
+        $sheetService->write($spreadsheetId, "Input", $entries);
+        $time_end = microtime(true);
+
+        return response()->json($time_end - $time_start);
     }
 }

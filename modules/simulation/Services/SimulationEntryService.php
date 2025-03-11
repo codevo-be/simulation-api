@@ -18,4 +18,13 @@ class SimulationEntryService
     {
         return SimulationEntry::where('simulation_id', $simulationId)->where('label', $label)->exists();
     }
+
+    public function getSimulationEntries($simulationId)
+    {
+        return SimulationEntry::join('questions as q', 'simulation_entries.label', '=', 'q.label')
+            ->where('simulation_entries.simulation_id', $simulationId)
+            ->orderBy('q.cell_reference')
+            ->select('simulation_entries.response', 'q.cell_reference')
+            ->get();
+    }
 }

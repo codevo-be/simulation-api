@@ -27,4 +27,10 @@ class SimulationService
         $simulation->spreadsheet_id = $spreadsheet_id;
         $simulation->save();
     }
+
+    public function getSpreadsheetId($simulationId)
+    {
+        $result = Simulation::where('id', $simulationId)->first('spreadsheet_id');
+        return $result->spreadsheet_id;
+    }
 }
