@@ -22,18 +22,6 @@ class GoogleSheet
         $this->drawer = new DriveFile();
     }
 
-
-    public function handle()
-    {
-        try
-        {
-            $googleSheet = new GoogleSheet();
-        } catch (\Exception $e)
-        {
-
-        }
-    }
-
     public function readValues($sheet = "output")
     {
         return $this->sheet->spreadsheets_values->get(self::SHEET_ID, 'Input');

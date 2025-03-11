@@ -7,6 +7,6 @@ Route::group([
    'prefix' => 'api',
 ], function () {
     Route::middleware(['auth:api', "auth.tenant"])->group(function () {
-        Route::resource("/simulation", SimulationController::class)->only(['store',  'update']);
+        Route::resource("/simulation", SimulationController::class)->only(['show', 'store',  'update']);
     });
 });
