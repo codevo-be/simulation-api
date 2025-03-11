@@ -30,6 +30,7 @@ return new class extends Migration
         });
 
         Schema::create('simulation_entries',  function (Blueprint $table) {
+            $table->id();
             $table->uuid('simulation_id');
             $table->string('label', 100);
             $table->unique(['simulation_id', 'label'], 'unique_simulation_question_ids');
