@@ -8,7 +8,7 @@ use DigicoSimulation\Http\Requests\GenerateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
 use DigicoSimulation\Services\Google\GoogleDriveService;
 use DigicoSimulation\Services\Google\GoogleSheetService;
-use DigicoSimulation\Services\QuestionService;
+use DigicoSimulation\Services\SimulationInputService;
 use DigicoSimulation\Services\SimulationEntryService;
 use DigicoSimulation\Services\SimulationService;
 use Illuminate\Http\JsonResponse;
@@ -16,12 +16,12 @@ use Illuminate\Http\Request;
 
 class SimulationController extends Controller
 {
-    private QuestionService $questionService;
+    private SimulationInputService $simulationInputService;
     private SimulationEntryService $simulationEntryService;
     private SimulationService $simulationService;
     public function __construct()
     {
-        $this->questionService = new QuestionService();
+        $this->simulationInputService = new SimulationInputService();
         $this->simulationEntryService = new SimulationEntryService();
         $this->simulationService = new SimulationService();
     }
@@ -49,30 +49,35 @@ class SimulationController extends Controller
     public function update(UpdateSimulationRequest $request, string $simulationId): JsonResponse //TODO Faire un gros try catch avec les items et vérifier s'ils existent (question comprise)
     {
         $data = $request->validated();
-        if ($data['response'] == null)
+        if ($data['values'] == null || $data['values'] == [])
         {
             return response()->json("Renvoyé car 0 valeur"); //TODO
         }
+
         if (!$this->simulationService->exists($simulationId))
         {
             //TODO Faire une vérification si une spreadsheet est liée ?
             throw new \Exception("La simulation n'existe pas : " . $simulationId); //TODO faire une réponse appropriée
         }
-
-        $question = $this->questionService->findQuestionFromLabel($data['label']);
-        if ($question == null)
+        foreach ($data['values'] as $entry)
         {
-            throw new \Exception("La question n'existe pas : " . $data['label']);
+            $label = $entry['label'];
+            $value = $entry['response'];
+
+            $input = $this->simulationInputService->findQuestionFromLabel($label);
+            if ($input == null)
+            {
+                throw new \Exception("La question n'existe pas : " .  $label);
+            }
+
+            $this->simulationEntryService->newOrUpdate($simulationId, $input->label, $value);
         }
 
-        $test = $this->simulationEntryService->newOrUpdate($simulationId, $question->label, $data['response']);
-
-        return response()->json($test);
+        return response()->json();
     }
 
     public function generate(GenerateSimulationRequest $request) : JsonResponse
     {
-
         $time_start = microtime(true);
 
         $data = $request->validated();

@@ -15,8 +15,9 @@ class UpdateSimulationRequest extends FormRequest
     {
         return [
             'current_step' => 'required|string|max:100',
-            'label' => 'required|string|max:100',
-            'response' => 'nullable|string|max:255', //TODO à changer nullable ?
+            'values' => 'required|array',
+            'values.*.label' => 'required|string|max:100',
+            'values.*.response' => 'nullable|string|max:255',
         ];
     }
 }

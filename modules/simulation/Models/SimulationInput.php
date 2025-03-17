@@ -4,7 +4,7 @@ namespace DigicoSimulation\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Question extends Model
+class SimulationInput extends Model
 {
     protected $primaryKey = 'label';
     protected $keyType = 'string';

@@ -10,7 +10,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void //TODO mettreun on update update pourles clefs étrangères ?
+    public function up(): void
     {
         Schema::create('simulations', function (Blueprint $table) {
             $table->uuid('id')->default(DB::raw('(UUID())'))->primary();

@@ -20,22 +20,13 @@ class GoogleSheetService
 
     public function write($spreadsheetId, $sheetName, $data)
     {
-        $values = [];
-        $rangeList = [];
-
-        foreach ($data as $entry)
-        {
-            $values[] =  [$entry->response];
-            $rangeList[] = $sheetName."!".$entry->cell_reference;
-        }
-
         $sheet = new Sheets($this->client);
-
         $requests = [];
-        foreach ($rangeList as $index => $range) {
+
+        foreach ($data as $cell => $value) {
             $requests[] = new \Google\Service\Sheets\ValueRange([
-                'range' => $range,
-                'values' => [$values[$index]]
+                'range' => $sheetName . "!" . $cell,
+                'values' => [[$value]]
             ]);
         }
 
@@ -50,4 +41,5 @@ class GoogleSheetService
             dd($e->getMessage());
         }
     }
+
 }
