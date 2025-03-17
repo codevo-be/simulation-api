@@ -59,6 +59,7 @@ class SimulationController extends Controller
             //TODO Faire une vérification si une spreadsheet est liée ?
             throw new \Exception("La simulation n'existe pas : " . $simulationId); //TODO faire une réponse appropriée
         }
+
         foreach ($data['values'] as $entry)
         {
             $label = $entry['label'];
@@ -82,6 +83,8 @@ class SimulationController extends Controller
 
         $data = $request->validated();
         $simulationId = $data['simulation_id'];
+        $this->simulationEntryService->addContactInformation($simulationId,  $data['email'], $data['phone'], $data['country'], $data['zip_code']);
+
         $entries = $this->simulationEntryService->getSimulationEntries($simulationId);
         $spreadsheetId = $this->simulationService->getSpreadsheetId($simulationId);
 

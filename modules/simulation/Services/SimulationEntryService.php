@@ -27,4 +27,19 @@ class SimulationEntryService
             ->orderBy('si.cell_reference')
             ->pluck('simulation_entries.response', 'si.cell_reference');
     }
+
+    public function addContactInformation($simulationId, $email, $phoneNumber, $country, $zipcode)
+    {
+        $contactData = [
+            'contactEmail' => $email,
+            'contactPhone' => $phoneNumber,
+            'contactCountry' => $country,
+            'contactZipCode' => $zipcode,
+        ];
+
+        foreach ($contactData as $label => $value) {
+            $this->newOrUpdate($simulationId, $label, $value);
+        }
+    }
+
 }
