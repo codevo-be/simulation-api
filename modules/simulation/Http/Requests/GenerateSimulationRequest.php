@@ -15,10 +15,6 @@ class GenerateSimulationRequest extends FormRequest
     {
         return [
             'simulation_id' => 'required|string|exists:simulations,id',
-            'email'=> 'required|string|email|max:255',
-            'phone'=> 'required|string|max:255',
-            'zip_code'=> 'required|string|max:255',
-            'country'=> 'required|string|max:255',
         ];
     }
 }

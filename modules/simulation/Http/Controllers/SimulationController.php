@@ -83,7 +83,6 @@ class SimulationController extends Controller
 
         $data = $request->validated();
         $simulationId = $data['simulation_id'];
-        $this->simulationEntryService->addContactInformation($simulationId,  $data['email'], $data['phone'], $data['country'], $data['zip_code']);
 
         $entries = $this->simulationEntryService->getSimulationEntries($simulationId);
         $spreadsheetId = $this->simulationService->getSpreadsheetId($simulationId);
