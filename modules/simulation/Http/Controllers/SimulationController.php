@@ -89,6 +89,10 @@ class SimulationController extends Controller
 
         $sheetService = new GoogleSheetService();
         $sheetService->write($spreadsheetId, "Input", $entries);
+
+        $ranges = ['C4:C14'];
+
+        $returnValues = $sheetService->read($spreadsheetId, "Output BLEU", $ranges);
         $time_end = microtime(true);
 
         return response()->json($time_end - $time_start);

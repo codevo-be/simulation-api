@@ -13,9 +13,19 @@ class GoogleSheetService
         $this->client = new GoogleClient();
     }
 
-    public function read($spreadsheetId, $sheetName, $range)
+    public function read($spreadsheetId, $sheetName, $ranges)
     {
+        $sheet = new Sheets($this->client);
 
+        // Formater les plages de cellules avec le nom de la feuille
+        $formattedRanges = array_map(fn($range) => "{$sheetName}!{$range}", $ranges);
+
+        try {
+            $response = $sheet->spreadsheets_values->batchGet($spreadsheetId, ['ranges' => $formattedRanges]);
+            return $response->getValueRanges();
+        } catch (\Exception $e) {
+            dd($e->getMessage());
+        }
     }
 
     public function write($spreadsheetId, $sheetName, $data)
