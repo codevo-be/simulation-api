@@ -16,6 +16,11 @@ class SimulationService
         return $simulation->id;
     }
 
+    public function get($simulationId)
+    {
+        return Simulation::find($simulationId);
+    }
+
     public function exists(string $simulationId): bool
     {
         return Simulation::where('id', $simulationId)->exists();

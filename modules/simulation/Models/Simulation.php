@@ -17,7 +17,8 @@ class Simulation extends Model
 
     protected $fillable = [
         'current_step',
-        'spreadsheet_id'
+        'spreadsheet_id',
+        'contact_id'
     ];
 
     protected static function boot(): void

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use DigicoSimulation\Http\Requests\CreateSimulationRequest;
 use DigicoSimulation\Http\Requests\GenerateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
+use DigicoSimulation\Http\Resources\SimulationResource;
 use DigicoSimulation\Services\Google\GoogleDriveService;
 use DigicoSimulation\Services\Google\GoogleSheetService;
 use DigicoSimulation\Services\SimulationInputService;
@@ -26,9 +27,15 @@ class SimulationController extends Controller
         $this->simulationService = new SimulationService();
     }
 
-    public function show(string $simulationId)
+    public function show(string $simulationId) : array
     {
+        $simulation = $this->simulationService->get($simulationId);
+        $entries = $this->simulationEntryService->getSimulationEntries($simulationId);
 
+        return [
+            'current_step' => $simulation->current_step,
+            'entries' => $entries
+        ];
     }
 
     public function store(CreateSimulationRequest $request): JsonResponse
@@ -87,7 +94,7 @@ class SimulationController extends Controller
         $data = $request->validated();
         $simulationId = $data['simulation_id'];
 
-        $entries = $this->simulationEntryService->getSimulationEntries($simulationId);
+        $entries = $this->simulationEntryService->getCellValueMap($simulationId);
         $spreadsheetId = $this->simulationService->getSpreadsheetId($simulationId);
 
         $sheetService = new GoogleSheetService();

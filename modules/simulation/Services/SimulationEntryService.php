@@ -21,25 +21,17 @@ class SimulationEntryService
 
     public function getSimulationEntries($simulationId)
     {
+        return SimulationEntry::where('simulation_id', $simulationId)
+            ->pluck('response', 'label');
+    }
+
+    public function getCellValueMap($simulationId)
+    {
         return SimulationEntry::join('simulation_inputs as si', 'simulation_entries.label', '=', 'si.label')
             ->where('simulation_entries.simulation_id', $simulationId)
             ->whereNotNull('si.cell_reference')
             ->orderBy('si.cell_reference')
             ->pluck('simulation_entries.response', 'si.cell_reference');
-    }
-
-    public function addContactInformation($simulationId, $email, $phoneNumber, $country, $zipcode)
-    {
-        $contactData = [
-            'contactEmail' => $email,
-            'contactPhone' => $phoneNumber,
-            'contactCountry' => $country,
-            'contactZipCode' => $zipcode,
-        ];
-
-        foreach ($contactData as $label => $value) {
-            $this->newOrUpdate($simulationId, $label, $value);
-        }
     }
 
 }
