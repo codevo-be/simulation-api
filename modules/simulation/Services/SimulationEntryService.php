@@ -6,7 +6,7 @@ use DigicoSimulation\Models\SimulationEntry;
 
 class SimulationEntryService
 {
-    public function newOrUpdate(string $simulationId, string $label, string $response): SimulationEntry
+    public function newOrUpdate(string $simulationId, string $label, ?string $response): SimulationEntry
     {
         return SimulationEntry::updateOrCreate(
             ['simulation_id' => $simulationId, 'label' => $label], // Match condition
