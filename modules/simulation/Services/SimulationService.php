@@ -33,4 +33,9 @@ class SimulationService
         $result = Simulation::where('id', $simulationId)->first('spreadsheet_id');
         return $result->spreadsheet_id;
     }
+
+    public function updateCurrentStep($simulationId, $currentStep)
+    {
+        Simulation::where('id', $simulationId)->update(['current_step' => $currentStep]);
+    }
 }

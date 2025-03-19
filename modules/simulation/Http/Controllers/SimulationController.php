@@ -48,6 +48,7 @@ class SimulationController extends Controller
 
     public function update(UpdateSimulationRequest $request, string $simulationId): JsonResponse //TODO Faire un gros try catch avec les items et vérifier s'ils existent (question comprise)
     {
+        //TODO FAIRE DES TRANSACTIONS
         $data = $request->validated();
         if ($data['values'] == null || $data['values'] == [])
         {
@@ -59,6 +60,8 @@ class SimulationController extends Controller
             //TODO Faire une vérification si une spreadsheet est liée ?
             throw new \Exception("La simulation n'existe pas : " . $simulationId); //TODO faire une réponse appropriée
         }
+
+        $this->simulationService->updateCurrentStep($simulationId, $data['current_step']);
 
         foreach ($data['values'] as $entry)
         {
@@ -92,9 +95,11 @@ class SimulationController extends Controller
 
         $ranges = ['C4:C14'];
 
-        $returnValues = $sheetService->read($spreadsheetId, "Output BLEU", $ranges);
+        $sheetValues = $sheetService->read($spreadsheetId, "Output BLEU", $ranges);
         $time_end = microtime(true);
 
-        return response()->json($time_end - $time_start);
+        $returnValues = [$sheetValues, $time_end-$time_start];
+
+        return response()->json($returnValues);
     }
 }
