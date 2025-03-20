@@ -7,6 +7,7 @@ use DigicoSimulation\Http\Requests\CreateSimulationRequest;
 use DigicoSimulation\Http\Requests\GenerateSimulationRequest;
 use DigicoSimulation\Http\Requests\UpdateSimulationRequest;
 use DigicoSimulation\Http\Resources\SimulationResource;
+use DigicoSimulation\Jobs\CopyFileToGoogleDriveJob;
 use DigicoSimulation\Services\Google\GoogleDriveService;
 use DigicoSimulation\Services\Google\GoogleSheetService;
 use DigicoSimulation\Services\SimulationInputService;
@@ -42,10 +43,13 @@ class SimulationController extends Controller
     {
         $data = $request->validated();
         $simulationId = $this->simulationService->create($data['current_step']);
-        $driveService = new GoogleDriveService();
+        /*$driveService = new GoogleDriveService();
         $spreadsheet_id = $driveService->copyFile();
-        $this->simulationService->linkSpreadsheetIdToSimulation($simulationId, $spreadsheet_id);
-        //CopyFileToGoogleDriveJob::dispatch($simulationId, new GoogleDriveService(), $this->simulationService); TODO à changer pour utiliser le job
+        $this->simulationService->linkSpreadsheetIdToSimulation($simulationId, $spreadsheet_id);*/
+
+        /*$tenant = tenancy()->tenant;
+        tenancy()->initialize($tenant);*/
+        CopyFileToGoogleDriveJob::dispatch($simulationId, new GoogleDriveService(), $this->simulationService);
 
         return response()->json([
             'message' => 'Simulation created successfully',
@@ -100,12 +104,13 @@ class SimulationController extends Controller
         $sheetService = new GoogleSheetService();
         $sheetService->write($spreadsheetId, "Input", $entries);
 
-        $ranges = ['C4:C14'];
+        $ranges = ['B4:C14'];
 
         $sheetValues = $sheetService->read($spreadsheetId, "Output BLEU", $ranges);
         $time_end = microtime(true);
 
-        $returnValues = [$sheetValues, $time_end-$time_start];
+
+        $returnValues = $sheetValues[0]->values;
 
         return response()->json($returnValues);
     }
