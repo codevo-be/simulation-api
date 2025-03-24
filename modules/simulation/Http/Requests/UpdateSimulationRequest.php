@@ -17,7 +17,7 @@ class UpdateSimulationRequest extends FormRequest
             'current_step' => 'required|string|max:100',
             'values' => 'required|array',
             'values.*.label' => 'required|string|max:100',
-            'values.*.response' => 'nullable|string|max:255',
+            'values.*.value' => 'nullable|string|max:255',
         ];
     }
 }

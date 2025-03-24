@@ -77,7 +77,7 @@ class SimulationController extends Controller
         foreach ($data['values'] as $entry)
         {
             $label = $entry['label'];
-            $value = $entry['response'];
+            $value = $entry['value'];
 
             $input = $this->simulationInputService->findQuestionFromLabel($label);
             if ($input == null)
@@ -93,8 +93,6 @@ class SimulationController extends Controller
 
     public function generate(GenerateSimulationRequest $request) : JsonResponse
     {
-        $time_start = microtime(true);
-
         $data = $request->validated();
         $simulationId = $data['simulation_id'];
 
@@ -107,8 +105,6 @@ class SimulationController extends Controller
         $ranges = ['B4:C14'];
 
         $sheetValues = $sheetService->read($spreadsheetId, "Output BLEU", $ranges);
-        $time_end = microtime(true);
-
 
         $returnValues = $sheetValues[0]->values;
 
